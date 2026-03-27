@@ -1,67 +1,63 @@
-# TimeWise
+# TimeWise - Complete One-Document Guide
 
-TimeWise is a full-stack timesheet management system.
+This is the single source of truth for TimeWise.
 
-It helps teams:
-- sign in securely
-- log weekly work hours
-- assign work to projects and tasks
+It explains everything in one place:
+- what the project is
+- how to run locally
+- how frontend/backend/database work
+- how to test and debug
+- how to host online
+- what is needed for handover
+
+Audience:
+- non-technical manager
+- technical team member
+
+---
+
+## 1. Project Summary
+
+TimeWise is a full-stack web application for weekly timesheet management.
+
+Users can:
+- sign in with Google
+- fill timesheets
+- map time to projects and tasks
 - view reports
-- manage user roles (Admin, Manager, Employee, HR, etc.)
+- manage roles (Admin/Manager/Employee/HR/Custom)
 
-This guide is written for both technical and non-technical users, so anyone can run the project on a local computer.
-
----
-
-## 1) What Type of Project Is This?
-
-TimeWise is a 3-tier web application:
-- Frontend: React (user interface in browser)
-- Backend: Node.js + Express (API and business logic)
-- Database: PostgreSQL (stores users, projects, tasks, timesheets)
-
-It is containerized with Docker, so all parts can run together with a single command.
+Technology stack:
+- Frontend: React (port 3000)
+- Backend API: Node.js + Express (port 8080)
+- Database: PostgreSQL (port 5432)
+- Runtime: Docker Compose
 
 ---
 
-## 2) High-Level Architecture
+## 2. System Architecture (Simple View)
 
-- Browser opens the frontend at `http://localhost:3000`
-- Frontend calls backend API at `http://localhost:8080`
-- Backend reads/writes data in PostgreSQL
-- Login uses Google OAuth + session cookies
-
-Simple request flow:
-1. User opens frontend.
-2. Frontend sends API request.
-3. Backend validates user/session.
-4. Backend queries database.
-5. Backend returns response.
+1. User opens the website in browser.
+2. Frontend sends request to backend API.
+3. Backend validates login/session.
+4. Backend reads/writes PostgreSQL data.
+5. Backend sends response.
 6. Frontend updates screen.
 
----
-
-## 3) Main Features
-
-- Google login and session-based authentication
-- Profile view and update
-- Weekly timesheet submission
-- Project and task-based entries
-- Admin dashboard
-- Role assignment from UI
-- Reports (users, weekly, projects)
-- Calendar page
+Main URLs:
+- Frontend: http://localhost:3000
+- Backend: http://localhost:8080
 
 ---
 
-## 4) Project Folder Structure
+## 3. Repository Structure
 
 ```text
 Timewise/
-├── docker-compose.yml                    # Runs DB + API + Web containers
-├── README.md                             # Main documentation (this file)
+├── docker-compose.yml
+├── README.md
 ├── timesheet/
-│   └── timesheet/                        # React frontend app
+│   └── timesheet/
 │       ├── Dockerfile
 │       ├── package.json
 │       ├── public/
@@ -72,7 +68,7 @@ Timewise/
 │           ├── lib/
 │           └── pages/
 └── TimeWiseBackEnd/
-    └── TimeWiseBackEnd/                  # Node/Express backend app
+    └── TimeWiseBackEnd/
         ├── Dockerfile
         ├── package.json
         ├── knexfile.js
@@ -87,44 +83,56 @@ Timewise/
             └── routes/
 ```
 
-Notes:
-- `__MACOSX` folders are metadata from zip extraction on Mac. They are not required for runtime.
-- `build/` in frontend is generated output and can be recreated.
+Note:
+- The __MACOSX folders are not required for runtime.
 
 ---
 
-## 5) Prerequisites (Install Once)
+## 4. Prerequisites
 
-Install these on the local machine:
-- Docker Desktop (recommended)
+### Required for local setup
+- Docker Desktop
 - Git
 
-Optional (only for non-Docker/manual mode):
+### Optional (manual/no-Docker mode)
 - Node.js 20+
 - npm
 - PostgreSQL 16+
 
 ---
 
-## 6) Fastest Way to Run (Recommended: Docker)
+## 5. Local Run (Recommended - Docker)
 
-From the project root (`Timewise` folder):
+This is the easiest method for managers and demos.
+
+### Step-by-step
+
+1. Clone repository
+
+```bash
+git clone https://github.com/humesh0905/timewise.git
+cd timewise
+```
+
+2. Start Docker Desktop
+
+3. Start all services
 
 ```bash
 docker compose up -d --build
 ```
 
-Then open:
-- Frontend: `http://localhost:3000`
-- Backend health: `http://localhost:8080`
+4. Open app
+- Frontend: http://localhost:3000
+- Backend check: http://localhost:8080
 
-To stop:
+5. Stop services when done
 
 ```bash
 docker compose down
 ```
 
-To stop and remove DB data:
+6. If you need fresh database volume reset
 
 ```bash
 docker compose down -v
@@ -132,18 +140,16 @@ docker compose down -v
 
 ---
 
-## 7) Environment Variables (Backend)
+## 6. Environment Configuration
 
-Backend reads values from:
-- `TimeWiseBackEnd/TimeWiseBackEnd/.env`
+Backend environment file location:
+- TimeWiseBackEnd/TimeWiseBackEnd/.env
 
-Create this file if missing.
-
-Minimum example:
+Use this template:
 
 ```env
 PORT=8080
-SESSION_SECRET=change_this_to_a_long_random_secret
+SESSION_SECRET=replace_with_long_random_secret
 
 DB_HOST=timewise_postgres
 DB_PORT=5432
@@ -159,24 +165,86 @@ ALLOWED_EMAIL_DOMAIN=@gmail.com
 ```
 
 Important:
-- For local Docker, `DB_HOST` should match the DB container hostname used by your setup.
-- If API cannot connect to DB, try setting `DB_HOST=timewise_db` if that is your active container name.
+- DB host may differ by container naming in your machine.
+- If DB connection fails, check running DB container name and update DB_HOST accordingly.
 
 ---
 
-## 8) Database Setup
+## 7. How Each Layer Works
 
-The backend uses PostgreSQL with:
-- schema changes in `migrations/`
-- seed data in `seeds/`
+### Frontend
+- Located at timesheet/timesheet
+- Built using React
+- Handles UI, forms, page routing, and API calls
+- API helper file: timesheet/timesheet/src/lib/api.js
+
+### Backend
+- Located at TimeWiseBackEnd/TimeWiseBackEnd
+- Built using Express
+- Handles auth, validation, business rules, role checks
+- Route registration in src/app.js
+
+### Database
+- PostgreSQL stores all persistent records
+- Schema evolves using Knex migrations
+- Seed data loaded from seeds
+
+---
+
+## 8. Key Functional Modules
+
+- Authentication: Google OAuth + session cookie
+- Profile: view/update profile and password
+- Timesheets: weekly entries, updates, deletes
+- Projects and Tasks: map work to structured items
+- Admin: users, roles, summaries
+- Reports: user/weekly/project analytics
+- Calendar: holiday view
+
+---
+
+## 9. API Overview
+
+### Auth
+- GET /auth/google
+- GET /auth/google/callback
+- GET /auth/status
+- GET /auth/logout
+- POST /auth/logout
+
+### Profile
+- GET /api/profile
+- PUT /api/profile
+- PUT /api/profile/password
+
+### Timesheets
+- GET /api/timesheets/:weekStart/entries
+- POST /api/timesheets
+- PUT /api/timesheets/entries/:entryId
+- DELETE /api/timesheets/entries/:entryId
+
+### Projects/Tasks
+- GET /api/projects
+- GET /api/projects/:projectId/tasks
+
+### Admin
+- GET /api/admin/users
+- GET /api/admin/timesheets
+- GET /api/admin/roles
+- PUT /api/admin/users/:userId/role
+- GET /api/admin/reports/users
+- GET /api/admin/reports/weekly
+- GET /api/admin/reports/projects
+
+---
+
+## 10. Database Management
 
 ### Docker mode
-Database container starts automatically from `docker-compose.yml`.
+- Database starts automatically with compose.
 
-### Manual mode (no Docker)
-1. Create database `timewise` in PostgreSQL.
-2. Update backend `.env` DB values.
-3. Run migrations and seeds (from backend folder):
+### Manual mode
+From backend folder:
 
 ```bash
 npm install
@@ -186,7 +254,7 @@ npm run seed:run
 
 ---
 
-## 9) Running Without Docker (Manual Developer Mode)
+## 11. Manual Run (Without Docker)
 
 ### Backend
 
@@ -196,8 +264,6 @@ npm install
 npm run dev
 ```
 
-Backend runs at `http://localhost:8080`.
-
 ### Frontend (new terminal)
 
 ```bash
@@ -206,85 +272,31 @@ npm install
 npm start
 ```
 
-Frontend runs at `http://localhost:3000`.
-
 ---
 
-## 10) How Frontend and Backend Work Together
+## 12. Testing
 
-Frontend API layer:
-- `timesheet/timesheet/src/lib/api.js`
-
-It sends requests with cookies (`credentials: include`) so authenticated sessions are preserved.
-
-Backend route registration:
-- `TimeWiseBackEnd/TimeWiseBackEnd/src/app.js`
-
-Main route groups:
-- `/auth` -> login, callback, logout, auth status
-- `/api/profile` -> profile data and password update
-- `/api/timesheets` -> timesheet CRUD
-- `/api/projects` -> projects and tasks
-- `/api/admin` -> users, roles, reports
-
----
-
-## 11) Core API Overview (Plain Language)
-
-Auth:
-- `GET /auth/google` -> start Google login
-- `GET /auth/google/callback` -> login callback
-- `GET /auth/status` -> check logged in user
-- `GET|POST /auth/logout` -> sign out
-
-Profile:
-- `GET /api/profile`
-- `PUT /api/profile`
-- `PUT /api/profile/password`
-
-Timesheets:
-- `GET /api/timesheets/:weekStart/entries`
-- `POST /api/timesheets`
-- `PUT /api/timesheets/entries/:entryId`
-- `DELETE /api/timesheets/entries/:entryId`
-
-Projects/Tasks:
-- `GET /api/projects`
-- `GET /api/projects/:projectId/tasks`
-
-Admin:
-- `GET /api/admin/users`
-- `GET /api/admin/timesheets`
-- `GET /api/admin/roles`
-- `PUT /api/admin/users/:userId/role`
-- `GET /api/admin/reports/users`
-- `GET /api/admin/reports/weekly`
-- `GET /api/admin/reports/projects`
-
----
-
-## 12) How to Test the Project
-
-Frontend tests (React Testing Library):
+### Frontend tests
 
 ```bash
 cd timesheet/timesheet
 npm test
 ```
 
-Backend currently has no automated unit test suite configured.
-
-Recommended backend validation:
-- open app and test login flow
-- create/update/delete timesheet entries
-- test profile update and password update
-- verify admin role assignment and reports
+### Backend tests
+- No full automated backend unit test suite is currently configured.
+- Validate by functional checks in browser:
+  - login
+  - profile update
+  - timesheet create/update/delete
+  - admin role update
+  - reports loading
 
 ---
 
-## 13) How to Debug Problems
+## 13. Debugging and Troubleshooting
 
-### Check running containers
+### Check containers
 
 ```bash
 docker ps
@@ -298,28 +310,27 @@ docker logs --tail 100 timewise_web
 docker logs --tail 100 timewise_db
 ```
 
-### Common issues and fixes
+### Common problems and fixes
 
-1. Frontend opens but API calls fail
-- confirm backend is running on port 8080
-- check CORS/session settings in backend
+1) Frontend loads but API fails
+- Confirm backend is running on 8080
+- Check browser console and backend logs
 
-2. Database connection error
-- verify DB host in `.env` (`timewise_postgres` vs `timewise_db`)
-- confirm DB container is healthy
+2) Database connection error
+- Verify DB_HOST, DB_USER, DB_PASS, DB_NAME
+- Confirm DB container is healthy
 
-3. Google login not working
-- verify `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`
-- callback URL in Google Console must match `OAUTH_CALLBACK_URL`
+3) Google login fails
+- Verify client ID/secret
+- Verify callback URL exact match in Google Cloud Console
 
-4. Old/stale UI still visible
-- rebuild web container:
+4) Old UI still visible
 
 ```bash
 docker compose up -d --build --no-deps web
 ```
 
-5. Need clean DB for fresh demo
+5) Need clean demo data
 
 ```bash
 docker exec timewise_db psql -U postgres -d timewise -c "DELETE FROM public.timesheet_entries; DELETE FROM public.timesheets;"
@@ -327,85 +338,122 @@ docker exec timewise_db psql -U postgres -d timewise -c "DELETE FROM public.time
 
 ---
 
-## 14) Role and Access Model
+## 14. Security Basics
 
-Typical roles:
-- Admin: manage users, roles, reports
-- Manager: review team activity (based on your business rules)
-- Employee: fill timesheets
-- HR/Custom roles: configurable in DB and admin UI
-
-Role checks are enforced in backend middleware and admin endpoints.
-
----
-
-## 15) Security Notes
-
-- Session cookie is HTTP-only.
-- OAuth is delegated to Google.
-- In production, set secure cookies and HTTPS.
-- Keep secrets only in `.env` (never commit secrets to GitHub).
+- Keep secrets only in .env files
+- Never commit real secrets to GitHub
+- Use strong SESSION_SECRET in all environments
+- Use HTTPS in production
+- Set secure cookies in production
+- Restrict server/network ports
 
 ---
 
-## 16) Deployment Readiness Checklist
+## 15. Hosting Online (Production)
 
-Before hosting on a server:
-- use strong `SESSION_SECRET`
-- configure production DB credentials
-- enable HTTPS
-- set cookie `secure=true`
-- update frontend and OAuth URLs to production domain
-- verify CORS origin in backend for production frontend URL
+## 15.1 What is needed
+
+- VPS server (Ubuntu recommended)
+- Domain name
+- DNS control access
+- SSL certificate (Let's Encrypt)
+- Docker + Docker Compose on server
+- Production environment variables
+- Google OAuth app configured for production domain
+
+Recommended minimum server:
+- 2 CPU
+- 4 GB RAM
+- 40+ GB SSD
+
+## 15.2 Deployment flow
+
+1. Provision server
+2. Install Docker and Docker Compose
+3. Clone repository on server
+4. Create production .env (backend)
+5. Start services with docker compose
+6. Configure Nginx reverse proxy
+7. Attach domain and HTTPS
+8. Update Google OAuth callback and allowed origins
+9. Run smoke tests
+
+## 15.3 Production checks
+
+- App opens on your domain via HTTPS
+- Login works with production callback URL
+- API and session behavior works behind reverse proxy
+- Database persists data after restart
+- Logs show no critical errors
 
 ---
 
-## 17) Quick Start for Non-Technical Manager
+## 16. Non-Technical Manager Quick Start
 
 1. Install Docker Desktop.
-2. Download this project from GitHub.
-3. Open terminal in project root (`Timewise`).
-4. Run: `docker compose up -d --build`
-5. Open browser: `http://localhost:3000`
-6. Use Google login to enter the app.
+2. Download project from GitHub.
+3. Open terminal in project folder.
+4. Run: docker compose up -d --build
+5. Open: http://localhost:3000
+6. Login using Google.
 
-If anything fails:
-- run `docker ps`
-- share container logs from section 13
+If issue occurs:
+- run docker ps
+- collect logs from section 13
+- share logs with technical team
 
 ---
 
-## 18) Useful Commands Reference
+## 17. Handover Checklist
+
+Share these with the next owner/manager:
+- this README
+- GitHub repository access
+- production server access
+- domain/DNS access
+- Google OAuth ownership/access
+- secure environment variable values
+- admin user details for app
+- backup and restore plan for database
+
+---
+
+## 18. Useful Command Reference
 
 ```bash
-# Start everything
+# Start all services
 docker compose up -d --build
 
-# Stop everything
+# Stop all services
 docker compose down
+
+# Stop and remove volumes
+docker compose down -v
 
 # Restart API only
 docker restart timewise_api
 
-# Rebuild frontend only
-docker compose up -d --build --no-deps web
+# Restart Web only
+docker restart timewise_web
 
-# Backend migrations (manual mode)
+# Rebuild web service only
+docker compose up -d --build --no-deps web
+```
+
+Manual backend commands:
+
+```bash
 cd TimeWiseBackEnd/TimeWiseBackEnd
 npm run migrate:latest
-
-# Backend seeds (manual mode)
 npm run seed:run
 ```
 
 ---
 
-## 19) Ownership and Maintenance
+## 19. Final Notes
 
-If you hand over this project to another person, share:
-- this `README.md`
-- `.env` template (without real secrets)
-- Google OAuth app credentials (securely)
-- basic admin login/testing checklist
+- For local demos, Docker mode is best.
+- For production, use HTTPS + secure environment setup.
+- Keep this document updated whenever routes, env keys, or deployment flow changes.
 
-This is enough for a new owner to run, verify, and maintain the system locally.
+This file is designed to be enough for both operations and management handover.
