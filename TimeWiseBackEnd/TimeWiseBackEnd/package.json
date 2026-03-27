@@ -1,0 +1,36 @@
+{
+  "name": "timewise",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "It is Used to handle BackEnd Api Requests for Frontend",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon src/index.js",
+    "start": "node src/index.js",
+    "migrate:make": "knex migrate:make",
+    "migrate:latest": "knex migrate:latest",
+    "migrate:rollback": "knex migrate:rollback",
+    "seed:run": "knex seed:run"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "connect-pg-simple": "^10.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "express-session": "^1.18.2",
+    "helmet": "^7.1.0",
+    "passport": "^0.7.0",
+    "passport-google-oauth20": "^2.0.0",
+    "pg": "^8.14.1",
+    "pg-pool": "^3.8.0",
+    "zod": "^4.1.11"
+  },
+  "devDependencies": {
+    "knex": "^3.2.6",
+    "nodemon": "^3.1.9"
+  }
+}

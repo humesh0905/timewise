@@ -1,0 +1,54 @@
+.timesheet-container {
+  padding: 32px;
+  max-width: 900px;
+  margin: 0 auto;
+  font-family: "Segoe UI", sans-serif;
+}
+
+.timesheet-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.project-selector {
+  font-size: 16px;
+}
+
+.timesheet-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.timesheet-table th,
+.timesheet-table td {
+  border: 1px solid #ccc;
+  text-align: center;
+  padding: 8px;
+}
+
+.timesheet-table input {
+  width: 80%;
+  padding: 6px;
+  text-align: center;
+}
+
+.timesheet-footer {
+  text-align: right;
+}
+
+.timesheet-footer button {
+  background-color: #1976d2;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  font-size: 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.timesheet-footer button:hover {
+  background-color: #125ca1;
+}

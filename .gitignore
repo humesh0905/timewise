@@ -1,0 +1,17 @@
+**/node_modules/
+**/build/
+**/dist/
+coverage/
+
+.env
+.env.*
+!.env.example
+
+__MACOSX/
+.DS_Store
+.vscode/
+.idea/
+
+*.log
+npm-debug.log*
+yarn-error.log*

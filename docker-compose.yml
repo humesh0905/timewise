@@ -1,0 +1,48 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: timewise_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: timewise
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - timewise_pgdata:/var/lib/postgresql/data
+
+  api:
+    build:
+      context: ./TimeWiseBackEnd/TimeWiseBackEnd
+    container_name: timewise_api
+    restart: unless-stopped
+    depends_on:
+      - db
+    env_file:
+      - ./TimeWiseBackEnd/TimeWiseBackEnd/.env
+    environment:
+      DB_HOST: timewise_postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASS: postgres
+      DB_NAME: timewise
+      DATABASE_URL: postgres://postgres:postgres@timewise_postgres:5432/timewise?options=-csearch_path%3Dpublic
+      PORT: 8080
+    ports:
+      - "8080:8080"
+
+  web:
+    build:
+      context: ./timesheet/timesheet
+    container_name: timewise_web
+    restart: unless-stopped
+    depends_on:
+      - api
+    environment:
+      CHOKIDAR_USEPOLLING: "true"
+    ports:
+      - "3000:3000"
+
+volumes:
+  timewise_pgdata:
