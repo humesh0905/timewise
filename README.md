@@ -10,10 +10,6 @@ It explains everything in one place:
 - how to host online
 - what is needed for handover
 
-Audience:
-- non-technical manager
-- technical team member
-
 ---
 
 ## 1. Project Summary
