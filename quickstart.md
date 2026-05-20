@@ -1,4 +1,4 @@
-# Quickstart — Run TimeWise (Manager-friendly)
+# Quickstart — Run TimeWise
 
 This short guide is focused on getting the app running quickly on a laptop and fixing the npm credential prompt if it appears.
 
@@ -153,8 +153,4 @@ if (Test-Path $env:USERPROFILE\.npmrc.backup) { Rename-Item $env:USERPROFILE\.np
 ```
 
 ---
-
-If you want, I can:
-- Add screenshots to this file (you'll need to provide images), or
-- Walk your manager through these steps over a quick video call or chat.
 
